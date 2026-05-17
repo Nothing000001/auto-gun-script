@@ -12,7 +12,7 @@ local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 local scriptActive = true
-local interval = 0
+local interval = 0.05
 local remainingTime = interval
 
 if playerGui:FindFirstChild("AutoGunGui") then
@@ -178,8 +178,6 @@ local function fireGun()
     local vim = game:GetService("VirtualInputManager")
 
     vim:SendMouseButtonEvent(0,0,0,true,game,0)
-    task.wait()
-    vim:SendMouseButtonEvent(0,0,0,false,game,0)
 end
 
 -- Auto activate on launch
