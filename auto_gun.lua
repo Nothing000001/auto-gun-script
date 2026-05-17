@@ -1,4 +1,3 @@
-local SCRIPT_SOURCE = [[
 -- ==========================================
 -- Nothing0 Auto Gun - LocalScript
 -- Put this in StarterPlayerScripts
@@ -204,7 +203,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
-queue_on_teleport([[
+queue_on_teleport( [[
 -- ==========================================
 -- Nothing0 Auto Gun - LocalScript
 -- Put this in StarterPlayerScripts
@@ -408,7 +407,5 @@ RunService.Heartbeat:Connect(function(dt)
         remainingTime = interval
         fireGun()
     end
-end)]]
-]]
-
-queue_on_teleport(SCRIPT_SOURCE)
+end)
+]])
