@@ -11,7 +11,7 @@ local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-local scriptActive = false
+local scriptActive = true
 local interval = 0.05
 local remainingTime = interval
 
