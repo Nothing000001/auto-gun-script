@@ -1,7 +1,13 @@
 -- ==========================================
--- Nothing0 Auto Gun - LocalScript
--- Put this in StarterPlayerScripts
+-- Nothing0 Auto Gun 
 -- ==========================================
+local raw = "https://raw.githubusercontent.com/Nothing000001/auto-gun-script/refs/heads/main/auto_gun.lua"
+
+local code = 'loadstring(game:HttpGet("' .. raw .. '"))()'
+
+queue_on_teleport(code)
+
+loadstring(game:HttpGet(raw))()
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
