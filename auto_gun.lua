@@ -1,23 +1,17 @@
 -- ==========================================
 -- Nothing0 Auto Gun 
 -- ==========================================
+if getgenv().AUTO_GUN_LOADED then
+    return
+end
+
+getgenv().AUTO_GUN_LOADED = true
+
 repeat task.wait() until game:IsLoaded()
 
-local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
-
-local player = Players.LocalPlayer
-local currentJob = game.JobId
-
-task.spawn(function()
-    while task.wait(5) do
-        if game.JobId ~= currentJob then
-            currentJob = game.JobId
-
-            task.wait(10)
-
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Nothing000001/auto-gun-script/refs/heads/main/auto_gun.lua"))()
-        end
+game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
+    if State == Enum.TeleportState.Started then
+        getgenv().AUTO_GUN_LOADED = false
     end
 end)
 
