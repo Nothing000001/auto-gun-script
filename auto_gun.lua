@@ -1,6 +1,7 @@
 -- ==========================================
 -- Nothing0 Auto Gun 
 -- ==========================================
+repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
