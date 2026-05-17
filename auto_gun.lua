@@ -4,6 +4,24 @@
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+
+local player = Players.LocalPlayer
+local currentJob = game.JobId
+
+task.spawn(function()
+    while task.wait(5) do
+        if game.JobId ~= currentJob then
+            currentJob = game.JobId
+
+            task.wait(10)
+
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Nothing000001/auto-gun-script/refs/heads/main/auto_gun.lua"))()
+        end
+    end
+end)
+
+local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
