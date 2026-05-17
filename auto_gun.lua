@@ -1,11 +1,6 @@
 -- ==========================================
 -- Nothing0 Auto Gun 
 -- ==========================================
-local raw = "https://raw.githubusercontent.com/Nothing000001/auto-gun-script/refs/heads/main/auto_gun.lua"
-
-queue_on_teleport([[
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Nothing000001/auto-gun-script/refs/heads/main/auto_gun.lua"))()
-]])
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
