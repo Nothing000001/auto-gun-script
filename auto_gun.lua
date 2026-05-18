@@ -1,17 +1,13 @@
 -- ==========================================
 -- Nothing0 Auto Gun 
 -- ==========================================
-if getgenv().AutoGunExecuted then
+if getgenv().AutoGunLoaded then
     return
 end
 
-getgenv().AutoGunExecuted = true
+getgenv().AutoGunLoaded = true
 
 repeat task.wait() until game:IsLoaded()
-
-game:GetService("Players").LocalPlayer.OnTeleport:Once(function()
-    getgenv().AutoGunExecuted = false
-end)
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
