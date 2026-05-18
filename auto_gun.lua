@@ -1,18 +1,16 @@
 -- ==========================================
 -- Nothing0 Auto Gun 
 -- ==========================================
-if getgenv().AUTO_GUN_LOADED then
+if getgenv().AutoGunExecuted then
     return
 end
 
-getgenv().AUTO_GUN_LOADED = true
+getgenv().AutoGunExecuted = true
 
 repeat task.wait() until game:IsLoaded()
 
-game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
-    if State == Enum.TeleportState.Started then
-        getgenv().AUTO_GUN_LOADED = false
-    end
+game:GetService("Players").LocalPlayer.OnTeleport:Once(function()
+    getgenv().AutoGunExecuted = false
 end)
 
 local Players = game:GetService("Players")
