@@ -18,7 +18,7 @@ local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 local scriptActive = true
-local interval = 0.05
+local interval = 0
 local remainingTime = interval
 
 if playerGui:FindFirstChild("AutoGunGui") then
