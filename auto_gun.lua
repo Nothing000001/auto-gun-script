@@ -27,73 +27,202 @@ if playerGui:FindFirstChild("AutoGunGui") then
 end
 
 -- ==========================================
--- GUI
+-- Nothing0 Hub UI
 -- ==========================================
 
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "AutoGunGui"
-screenGui.ResetOnSpawn = false
-screenGui.DisplayOrder = 999
-screenGui.Parent = playerGui
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 240, 0, 125)
-frame.Position = UDim2.new(0, 20, 0, 20)
-frame.BackgroundColor3 = Color3.fromHex("121212")
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-frame.Parent = screenGui
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+if playerGui:FindFirstChild("Nothing0Hub") then
+    playerGui.Nothing0Hub:Destroy()
+end
+
+-- ==========================================
+-- MAIN GUI
+-- ==========================================
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "Nothing0Hub"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 280, 0, 360)
+main.Position = UDim2.new(0, 20, 0.5, -180)
+main.BackgroundColor3 = Color3.fromRGB(12,12,18)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
+main.Parent = gui
 
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 8)
-corner.Parent = frame
+corner.CornerRadius = UDim.new(0,12)
+corner.Parent = main
 
--- Top bar
-local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1, 0, 0, 4)
-topBar.Position = UDim2.new(0, 0, 0, 0)
-topBar.BackgroundColor3 = Color3.fromHex("00FFAA")
-topBar.BorderSizePixel = 0
-topBar.Parent = frame
+-- ==========================================
+-- TOP BAR
+-- ==========================================
 
-local topBarCorner = Instance.new("UICorner")
-topBarCorner.CornerRadius = UDim.new(0, 8)
-topBarCorner.Parent = topBar
-
--- Title
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 35)
-title.Position = UDim2.new(0, 0, 0, 8)
+title.Size = UDim2.new(1,0,0,40)
 title.BackgroundTransparency = 1
-title.Text = "Nothing0 AUTO GUN + Aim"
-title.TextColor3 = Color3.fromHex("00FFAA")
-title.TextSize = 16
+title.Text = "Nothing0 Hub"
 title.Font = Enum.Font.GothamBold
-title.Parent = frame
+title.TextSize = 18
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Parent = main
 
--- Status
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(0, 80, 0, 20)
-statusLabel.Position = UDim2.new(0, 15, 0, 48)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Text = "Status"
-statusLabel.TextColor3 = Color3.fromHex("FFFFFF")
-statusLabel.TextSize = 13
-statusLabel.Font = Enum.Font.GothamBold
-statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-statusLabel.Parent = frame
+-- ==========================================
+-- TABS
+-- ==========================================
 
-local statusValue = Instance.new("TextLabel")
-statusValue.Size = UDim2.new(0, 60, 0, 20)
-statusValue.Position = UDim2.new(0, 130, 0, 48)
-statusValue.BackgroundTransparency = 1
-statusValue.Text = "OFF"
-statusValue.TextColor3 = Color3.fromHex("FF4444")
-statusValue.TextSize = 14
-statusValue.Font = Enum.Font.GothamBold
-statusValue.TextXAlignment = Enum.TextXAlignment.Left
-statusValue.Parent = frame
+local tabs = {
+    {"Main", true},
+    {"SEE IT", false},
+    {"Other", false},
+}
+
+for i,tab in pairs(tabs) do
+
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(0,80,0,32)
+    b.Position = UDim2.new(0,10 + ((i-1)*90),0,45)
+    b.Text = tab[1]
+    b.Font = Enum.Font.GothamBold
+    b.TextSize = 13
+    b.BorderSizePixel = 0
+
+    if tab[2] then
+        b.BackgroundColor3 = Color3.fromRGB(100,70,255)
+    else
+        b.BackgroundColor3 = Color3.fromRGB(25,25,35)
+    end
+
+    b.TextColor3 = Color3.new(1,1,1)
+
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0,8)
+    c.Parent = b
+
+    b.Parent = main
+end
+
+-- ==========================================
+-- SCROLL
+-- ==========================================
+
+local scroll = Instance.new("ScrollingFrame")
+scroll.Size = UDim2.new(1,-10,1,-95)
+scroll.Position = UDim2.new(0,5,0,90)
+scroll.CanvasSize = UDim2.new(0,0,0,500)
+scroll.BackgroundTransparency = 1
+scroll.BorderSizePixel = 0
+scroll.ScrollBarThickness = 3
+scroll.Parent = main
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0,10)
+layout.Parent = scroll
+
+-- ==========================================
+-- FUNCTIONS
+-- ==========================================
+
+local function createOption(text, enabled, shortcut)
+
+    local holder = Instance.new("Frame")
+    holder.Size = UDim2.new(1,-10,0,42)
+    holder.BackgroundTransparency = 1
+    holder.Parent = scroll
+
+    local line = Instance.new("Frame")
+    line.Size = UDim2.new(0,2,0,28)
+    line.Position = UDim2.new(0,0,0.5,-14)
+
+    if enabled then
+        line.BackgroundColor3 = Color3.fromRGB(120,80,255)
+    else
+        line.BackgroundColor3 = Color3.fromRGB(255,70,70)
+    end
+
+    line.BorderSizePixel = 0
+    line.Parent = holder
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0,170,1,0)
+    label.Position = UDim2.new(0,10,0,0)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+
+    if shortcut then
+        label.Text = text .. " [" .. shortcut .. "]"
+    else
+        label.Text = text
+    end
+
+    if enabled then
+        label.TextColor3 = Color3.new(1,1,1)
+    else
+        label.TextColor3 = Color3.fromRGB(255,80,80)
+    end
+
+    label.Parent = holder
+
+    local toggleBg = Instance.new("Frame")
+    toggleBg.Size = UDim2.new(0,42,0,22)
+    toggleBg.Position = UDim2.new(1,-50,0.5,-11)
+
+    if enabled then
+        toggleBg.BackgroundColor3 = Color3.fromRGB(120,80,255)
+    else
+        toggleBg.BackgroundColor3 = Color3.fromRGB(45,45,55)
+    end
+
+    toggleBg.BorderSizePixel = 0
+    toggleBg.Parent = holder
+
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(1,0)
+    toggleCorner.Parent = toggleBg
+
+    local knob = Instance.new("Frame")
+    knob.Size = UDim2.new(0,18,0,18)
+    knob.Position = enabled
+        and UDim2.new(1,-20,0.5,-9)
+        or UDim2.new(0,2,0.5,-9)
+
+    knob.BackgroundColor3 = Color3.new(1,1,1)
+    knob.BorderSizePixel = 0
+    knob.Parent = toggleBg
+
+    local knobCorner = Instance.new("UICorner")
+    knobCorner.CornerRadius = UDim.new(1,0)
+    knobCorner.Parent = knob
+end
+
+-- ==========================================
+-- OPTIONS
+-- ==========================================
+
+createOption("Auto Roll", false)
+createOption("Auto Equip Best", false)
+createOption("Auto Loot", false)
+createOption("Auto Collect Fruits", false)
+createOption("Auto Kill", false)
+
+-- TON SCRIPT
+createOption("Auto Gun", true, "F1")
+
+createOption("Auto Index", false)
+createOption("Auto TP Zone", false)
+createOption("Auto Rebirth", false)
+createOption("Auto Boss", false)
 
 -- ==========================================
 -- TOGGLE SWITCH
