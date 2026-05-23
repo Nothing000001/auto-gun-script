@@ -10,6 +10,15 @@ getgenv().AutoGunLoaded = true
 
 repeat task.wait() until game:IsLoaded()
 
+task.wait(1)
+
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+-- SHIFT PRESS
+VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game)
+task.wait(0.05)
+VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game)
+
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -69,7 +78,7 @@ local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 35)
 title.Position = UDim2.new(0, 0, 0, 8)
 title.BackgroundTransparency = 1
-title.Text = "Nothing0 AUTO GUN"
+title.Text = "Nothing0 AUTO GUN + AIM BOT"
 title.TextColor3 = Color3.fromHex("00FFAA")
 title.TextSize = 16
 title.Font = Enum.Font.GothamBold
