@@ -281,27 +281,22 @@ local function getClosestSlime()
     local shortest = math.huge
 
     for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("Model") and v.Name == "ObeliskSlime" then
+        if v:IsA("BasePart") and v.Name == "SlimeBody" then
 
-            local obelisk = v:FindFirstChild("Obelisk")
+            local pos, visible =
+                Camera:WorldToViewportPoint(v.Position)
 
-            if obelisk then
-                local part = obelisk:FindFirstChild("Part")
+            if visible then
 
-                if part then
-                    local pos, visible = Camera:WorldToViewportPoint(part.Position)
+                local mousePos =
+                    UserInputService:GetMouseLocation()
 
-                    if visible then
-                        local mousePos = UserInputService:GetMouseLocation()
+                local distance =
+                    (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
 
-                        local distance =
-                            (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
-
-                        if distance < shortest then
-                            shortest = distance
-                            closest = part
-                        end
-                    end
+                if distance < shortest then
+                    shortest = distance
+                    closest = v
                 end
             end
         end
