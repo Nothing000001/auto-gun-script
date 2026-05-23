@@ -1,5 +1,5 @@
 -- ==========================================
--- Nothing0 Auto Gun + Slime Aimbot
+-- Nothing0 Auto Gun + Optimized Slime Aimbot
 -- ==========================================
 
 if getgenv().AutoGunLoaded then
@@ -9,15 +9,6 @@ end
 getgenv().AutoGunLoaded = true
 
 repeat task.wait() until game:IsLoaded()
-
-task.wait(1)
-
-local VirtualInputManager = game:GetService("VirtualInputManager")
-
--- SHIFT PRESS
-VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game)
-task.wait(0.05)
-VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game)
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -29,11 +20,16 @@ local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local Camera = workspace.CurrentCamera
 
+local enemiesFolder = workspace:WaitForChild("Enemies")
+
 local scriptActive = true
 local aimbotEnabled = true
 
 local interval = 0.05
 local remainingTime = interval
+
+local currentTarget = nil
+local targetTimer = 0
 
 if playerGui:FindFirstChild("AutoGunGui") then
     playerGui.AutoGunGui:Destroy()
@@ -78,13 +74,13 @@ local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 35)
 title.Position = UDim2.new(0, 0, 0, 8)
 title.BackgroundTransparency = 1
-title.Text = "Nothing0 AUTO GUN + AIM BOT"
+title.Text = "Nothing0 AUTO GUN"
 title.TextColor3 = Color3.fromHex("00FFAA")
 title.TextSize = 16
 title.Font = Enum.Font.GothamBold
 title.Parent = frame
 
--- Status label
+-- Status
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(0, 80, 0, 20)
 statusLabel.Position = UDim2.new(0, 15, 0, 48)
@@ -273,30 +269,32 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 -- ==========================================
--- SLIME AIMBOT
+-- OPTIMIZED SLIME AIMBOT
 -- ==========================================
 
 local function getClosestSlime()
     local closest = nil
     local shortest = math.huge
 
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("BasePart") and v.Name == "SlimeBody" then
+    local mousePos = UserInputService:GetMouseLocation()
+
+    for _, v in pairs(enemiesFolder:GetChildren()) do
+
+        local target = v:FindFirstChild("SlimeBody")
+
+        if target and target:IsA("BasePart") then
 
             local pos, visible =
-                Camera:WorldToViewportPoint(v.Position)
+                Camera:WorldToViewportPoint(target.Position)
 
             if visible then
-
-                local mousePos =
-                    UserInputService:GetMouseLocation()
 
                 local distance =
                     (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
 
                 if distance < shortest then
                     shortest = distance
-                    closest = v
+                    closest = target
                 end
             end
         end
@@ -310,17 +308,15 @@ end
 -- ==========================================
 
 local function fireGun()
-    -- LEFT CLICK
     VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
     VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
-
 end
 
 -- ==========================================
 -- MAIN LOOP
 -- ==========================================
 
-RunService.Heartbeat:Connect(function(dt)
+RunService.RenderStepped:Connect(function(dt)
 
     if scriptActive then
         remainingTime = remainingTime - dt
@@ -331,14 +327,17 @@ RunService.Heartbeat:Connect(function(dt)
         end
     end
 
-    if aimbotEnabled then
-        local target = getClosestSlime()
+    targetTimer = targetTimer - dt
 
-        if target then
-            Camera.CFrame = Camera.CFrame:Lerp(
-                CFrame.new(Camera.CFrame.Position, target.Position),
-                0.15
-            )
-        end
+    if targetTimer <= 0 then
+        targetTimer = 0.1
+        currentTarget = getClosestSlime()
+    end
+
+    if aimbotEnabled and currentTarget then
+        Camera.CFrame = Camera.CFrame:Lerp(
+            CFrame.new(Camera.CFrame.Position, currentTarget.Position),
+            0.12
+        )
     end
 end)
