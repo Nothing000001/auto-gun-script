@@ -1,6 +1,6 @@
 -- ==========================================
 -- Nothing0 Auto Gun
--- HOLD MODE VERSION
+-- NEW GOOPGUN FIX
 -- ==========================================
 
 if getgenv().AutoGunLoaded then
@@ -73,7 +73,7 @@ title.TextSize = 16
 title.Font = Enum.Font.GothamBold
 title.Parent = frame
 
--- Status label
+-- Status
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(0, 80, 0, 20)
 statusLabel.Position = UDim2.new(0, 15, 0, 48)
@@ -149,9 +149,14 @@ footer.Parent = frame
 -- ==========================================
 
 local function holdMouse()
-    if holdingMouse then return end
+
+    if holdingMouse then
+        return
+    end
+
     holdingMouse = true
 
+    -- LEFT CLICK HOLD
     VirtualInputManager:SendMouseButtonEvent(
         0,
         0,
@@ -160,16 +165,41 @@ local function holdMouse()
         game,
         0
     )
+
+    -- RIGHT CLICK HOLD
+    VirtualInputManager:SendMouseButtonEvent(
+        0,
+        0,
+        1,
+        true,
+        game,
+        0
+    )
 end
 
 local function releaseMouse()
-    if not holdingMouse then return end
+
+    if not holdingMouse then
+        return
+    end
+
     holdingMouse = false
 
+    -- LEFT RELEASE
     VirtualInputManager:SendMouseButtonEvent(
         0,
         0,
         0,
+        false,
+        game,
+        0
+    )
+
+    -- RIGHT RELEASE
+    VirtualInputManager:SendMouseButtonEvent(
+        0,
+        0,
+        1,
         false,
         game,
         0
@@ -229,9 +259,11 @@ local function toggle()
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
+
     if input.KeyCode == Enum.KeyCode.F1 and not gameProcessed then
         toggle()
     end
+
 end)
 
 -- ==========================================
@@ -255,13 +287,30 @@ switchLabel.TextColor3 = Color3.fromHex("00FF00")
 holdMouse()
 
 -- ==========================================
--- SAFETY LOOP
+-- MAIN LOOP
 -- ==========================================
 
 RunService.Heartbeat:Connect(function()
 
-    if scriptActive and not holdingMouse then
+    if not scriptActive then
+        return
+    end
+
+    if not holdingMouse then
         holdMouse()
     end
+
+    -- Fake InputBegan
+    pcall(function()
+
+        UserInputService.InputBegan:Fire({
+            UserInputType = Enum.UserInputType.MouseButton1
+        }, false)
+
+        UserInputService.InputBegan:Fire({
+            UserInputType = Enum.UserInputType.MouseButton2
+        }, false)
+
+    end)
 
 end)
