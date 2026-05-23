@@ -314,9 +314,6 @@ local function fireGun()
     VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
     VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
 
-    -- RIGHT CLICK
-    VirtualInputManager:SendMouseButtonEvent(0,0,1,true,game,0)
-    VirtualInputManager:SendMouseButtonEvent(0,0,1,false,game,0)
 end
 
 -- ==========================================
