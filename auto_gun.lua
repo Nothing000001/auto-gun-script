@@ -1,6 +1,8 @@
 -- ==========================================
--- Nothing0 Auto Gun 
+-- Nothing0 Auto Gun
+-- HOLD MODE VERSION
 -- ==========================================
+
 if getgenv().AutoGunLoaded then
     return
 end
@@ -13,13 +15,13 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 local scriptActive = true
-local interval = 0.05
-local remainingTime = interval
+local holdingMouse = false
 
 if playerGui:FindFirstChild("AutoGunGui") then
     playerGui.AutoGunGui:Destroy()
@@ -55,6 +57,7 @@ topBar.Position = UDim2.new(0, 0, 0, 0)
 topBar.BackgroundColor3 = Color3.fromHex("00FFAA")
 topBar.BorderSizePixel = 0
 topBar.Parent = frame
+
 local topBarCorner = Instance.new("UICorner")
 topBarCorner.CornerRadius = UDim.new(0, 8)
 topBarCorner.Parent = topBar
@@ -96,12 +99,14 @@ statusValue.Parent = frame
 -- ==========================================
 -- TOGGLE SWITCH
 -- ==========================================
+
 local switchBg = Instance.new("Frame")
 switchBg.Size = UDim2.new(0, 54, 0, 28)
 switchBg.Position = UDim2.new(0, 15, 0, 78)
 switchBg.BackgroundColor3 = Color3.fromHex("FF4444")
 switchBg.BorderSizePixel = 0
 switchBg.Parent = frame
+
 local switchBgCorner = Instance.new("UICorner")
 switchBgCorner.CornerRadius = UDim.new(1, 0)
 switchBgCorner.Parent = switchBg
@@ -123,6 +128,7 @@ knob.Position = UDim2.new(0, 3, 0.5, -11)
 knob.BackgroundColor3 = Color3.fromHex("FFFFFF")
 knob.BorderSizePixel = 0
 knob.Parent = switchBg
+
 local knobCorner = Instance.new("UICorner")
 knobCorner.CornerRadius = UDim.new(1, 0)
 knobCorner.Parent = knob
@@ -139,35 +145,86 @@ footer.Font = Enum.Font.Gotham
 footer.Parent = frame
 
 -- ==========================================
+-- HOLD FUNCTIONS
+-- ==========================================
+
+local function holdMouse()
+    if holdingMouse then return end
+    holdingMouse = true
+
+    VirtualInputManager:SendMouseButtonEvent(
+        0,
+        0,
+        0,
+        true,
+        game,
+        0
+    )
+end
+
+local function releaseMouse()
+    if not holdingMouse then return end
+    holdingMouse = false
+
+    VirtualInputManager:SendMouseButtonEvent(
+        0,
+        0,
+        0,
+        false,
+        game,
+        0
+    )
+end
+
+-- ==========================================
 -- TOGGLE FUNCTION
 -- ==========================================
-local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+local tweenInfo = TweenInfo.new(
+    0.2,
+    Enum.EasingStyle.Quad,
+    Enum.EasingDirection.Out
+)
 
 local function toggle()
+
     scriptActive = not scriptActive
+
     if scriptActive then
+
         TweenService:Create(knob, tweenInfo, {
             Position = UDim2.new(0, 29, 0.5, -11)
         }):Play()
+
         TweenService:Create(switchBg, tweenInfo, {
             BackgroundColor3 = Color3.fromHex("00FF00")
         }):Play()
+
         statusValue.Text = "ON"
         statusValue.TextColor3 = Color3.fromHex("00FF00")
+
         switchLabel.Text = "Active"
         switchLabel.TextColor3 = Color3.fromHex("00FF00")
-        remainingTime = interval
+
+        holdMouse()
+
     else
+
         TweenService:Create(knob, tweenInfo, {
             Position = UDim2.new(0, 3, 0.5, -11)
         }):Play()
+
         TweenService:Create(switchBg, tweenInfo, {
             BackgroundColor3 = Color3.fromHex("FF4444")
         }):Play()
+
         statusValue.Text = "OFF"
         statusValue.TextColor3 = Color3.fromHex("FF4444")
+
         switchLabel.Text = "Press F1 to activate"
         switchLabel.TextColor3 = Color3.fromHex("666666")
+
+        releaseMouse()
     end
 end
 
@@ -178,42 +235,33 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 -- ==========================================
--- AUTO ACTION
+-- AUTO ACTIVATE
 -- ==========================================
-local function fireGun()
-    local vim = game:GetService("VirtualInputManager")
 
-    -- LEFT CLICK
-    vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-    vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-
-    -- RIGHT CLICK
-    vim:SendMouseButtonEvent(0, 0, 1, true, game, 0)
-    vim:SendMouseButtonEvent(0, 0, 1, false, game, 0)
-end
-
--- Auto activate on launch
 TweenService:Create(knob, tweenInfo, {
     Position = UDim2.new(0, 29, 0.5, -11)
 }):Play()
+
 TweenService:Create(switchBg, tweenInfo, {
     BackgroundColor3 = Color3.fromHex("00FF00")
 }):Play()
+
 statusValue.Text = "ON"
 statusValue.TextColor3 = Color3.fromHex("00FF00")
+
 switchLabel.Text = "Active"
 switchLabel.TextColor3 = Color3.fromHex("00FF00")
 
--- ==========================================
--- MAIN LOOP
--- ==========================================
-RunService.Heartbeat:Connect(function(dt)
-    if not scriptActive then return end
+holdMouse()
 
-    remainingTime = remainingTime - dt
+-- ==========================================
+-- SAFETY LOOP
+-- ==========================================
 
-    if remainingTime <= 0 then
-        remainingTime = interval
-        fireGun()
+RunService.Heartbeat:Connect(function()
+
+    if scriptActive and not holdingMouse then
+        holdMouse()
     end
+
 end)
