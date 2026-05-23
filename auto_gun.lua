@@ -2,7 +2,6 @@
 -- Nothing0 Auto Gun
 -- NEW GOOPGUN FIX
 -- ==========================================
-
 if getgenv().AutoGunLoaded then
     return
 end
