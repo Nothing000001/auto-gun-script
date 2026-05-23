@@ -313,3 +313,56 @@ RunService.Heartbeat:Connect(function()
     end)
 
 end)
+
+-- ==========================================
+-- AUTO F1 LOOP
+-- ==========================================
+
+task.spawn(function()
+
+    local VirtualInputManager =
+        game:GetService("VirtualInputManager")
+
+    while true do
+
+        task.wait(300)
+
+        -- F1
+        VirtualInputManager:SendKeyEvent(
+            true,
+            Enum.KeyCode.F1,
+            false,
+            game
+        )
+
+        VirtualInputManager:SendKeyEvent(
+            false,
+            Enum.KeyCode.F1,
+            false,
+            game
+        )
+
+        print("F1 #1")
+
+        task.wait(10)
+
+        -- F1 encore
+        VirtualInputManager:SendKeyEvent(
+            true,
+            Enum.KeyCode.F1,
+            false,
+            game
+        )
+
+        VirtualInputManager:SendKeyEvent(
+            false,
+            Enum.KeyCode.F1,
+            false,
+            game
+        )
+
+        print("F1 #2")
+
+    end
+
+end)
