@@ -1,6 +1,7 @@
 -- ==========================================
--- Nothing0 Auto Gun 
+-- Nothing0 Auto Gun + Slime Aimbot
 -- ==========================================
+
 if getgenv().AutoGunLoaded then
     return
 end
@@ -13,11 +14,15 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local Camera = workspace.CurrentCamera
 
 local scriptActive = true
+local aimbotEnabled = true
+
 local interval = 0.05
 local remainingTime = interval
 
@@ -36,7 +41,7 @@ screenGui.DisplayOrder = 999
 screenGui.Parent = playerGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 240, 0, 125)
+frame.Size = UDim2.new(0, 240, 0, 160)
 frame.Position = UDim2.new(0, 20, 0, 20)
 frame.BackgroundColor3 = Color3.fromHex("121212")
 frame.BorderSizePixel = 0
@@ -51,10 +56,10 @@ corner.Parent = frame
 -- Top bar
 local topBar = Instance.new("Frame")
 topBar.Size = UDim2.new(1, 0, 0, 4)
-topBar.Position = UDim2.new(0, 0, 0, 0)
 topBar.BackgroundColor3 = Color3.fromHex("00FFAA")
 topBar.BorderSizePixel = 0
 topBar.Parent = frame
+
 local topBarCorner = Instance.new("UICorner")
 topBarCorner.CornerRadius = UDim.new(0, 8)
 topBarCorner.Parent = topBar
@@ -86,46 +91,86 @@ local statusValue = Instance.new("TextLabel")
 statusValue.Size = UDim2.new(0, 60, 0, 20)
 statusValue.Position = UDim2.new(0, 130, 0, 48)
 statusValue.BackgroundTransparency = 1
-statusValue.Text = "OFF"
-statusValue.TextColor3 = Color3.fromHex("FF4444")
+statusValue.Text = "ON"
+statusValue.TextColor3 = Color3.fromHex("00FF00")
 statusValue.TextSize = 14
 statusValue.Font = Enum.Font.GothamBold
 statusValue.TextXAlignment = Enum.TextXAlignment.Left
 statusValue.Parent = frame
 
 -- ==========================================
--- TOGGLE SWITCH
+-- AUTO GUN SWITCH
 -- ==========================================
+
 local switchBg = Instance.new("Frame")
 switchBg.Size = UDim2.new(0, 54, 0, 28)
 switchBg.Position = UDim2.new(0, 15, 0, 78)
-switchBg.BackgroundColor3 = Color3.fromHex("FF4444")
+switchBg.BackgroundColor3 = Color3.fromHex("00FF00")
 switchBg.BorderSizePixel = 0
 switchBg.Parent = frame
-local switchBgCorner = Instance.new("UICorner")
-switchBgCorner.CornerRadius = UDim.new(1, 0)
-switchBgCorner.Parent = switchBg
+
+local switchCorner = Instance.new("UICorner")
+switchCorner.CornerRadius = UDim.new(1, 0)
+switchCorner.Parent = switchBg
+
+local knob = Instance.new("Frame")
+knob.Size = UDim2.new(0, 22, 0, 22)
+knob.Position = UDim2.new(0, 29, 0.5, -11)
+knob.BackgroundColor3 = Color3.fromHex("FFFFFF")
+knob.BorderSizePixel = 0
+knob.Parent = switchBg
+
+local knobCorner = Instance.new("UICorner")
+knobCorner.CornerRadius = UDim.new(1, 0)
+knobCorner.Parent = knob
 
 local switchLabel = Instance.new("TextLabel")
-switchLabel.Size = UDim2.new(0, 120, 0, 28)
+switchLabel.Size = UDim2.new(0, 140, 0, 28)
 switchLabel.Position = UDim2.new(0, 78, 0, 78)
 switchLabel.BackgroundTransparency = 1
-switchLabel.Text = "Press F1 to activate"
-switchLabel.TextColor3 = Color3.fromHex("666666")
+switchLabel.Text = "Auto Gun ON (F1)"
+switchLabel.TextColor3 = Color3.fromHex("00FF00")
 switchLabel.TextSize = 11
 switchLabel.Font = Enum.Font.Gotham
 switchLabel.TextXAlignment = Enum.TextXAlignment.Left
 switchLabel.Parent = frame
 
-local knob = Instance.new("Frame")
-knob.Size = UDim2.new(0, 22, 0, 22)
-knob.Position = UDim2.new(0, 3, 0.5, -11)
-knob.BackgroundColor3 = Color3.fromHex("FFFFFF")
-knob.BorderSizePixel = 0
-knob.Parent = switchBg
-local knobCorner = Instance.new("UICorner")
-knobCorner.CornerRadius = UDim.new(1, 0)
-knobCorner.Parent = knob
+-- ==========================================
+-- AIMBOT SWITCH
+-- ==========================================
+
+local aimbotBg = Instance.new("Frame")
+aimbotBg.Size = UDim2.new(0, 54, 0, 28)
+aimbotBg.Position = UDim2.new(0, 15, 0, 112)
+aimbotBg.BackgroundColor3 = Color3.fromHex("00FF00")
+aimbotBg.BorderSizePixel = 0
+aimbotBg.Parent = frame
+
+local aimbotCorner = Instance.new("UICorner")
+aimbotCorner.CornerRadius = UDim.new(1, 0)
+aimbotCorner.Parent = aimbotBg
+
+local aimbotKnob = Instance.new("Frame")
+aimbotKnob.Size = UDim2.new(0, 22, 0, 22)
+aimbotKnob.Position = UDim2.new(0, 29, 0.5, -11)
+aimbotKnob.BackgroundColor3 = Color3.fromHex("FFFFFF")
+aimbotKnob.BorderSizePixel = 0
+aimbotKnob.Parent = aimbotBg
+
+local aimbotKnobCorner = Instance.new("UICorner")
+aimbotKnobCorner.CornerRadius = UDim.new(1, 0)
+aimbotKnobCorner.Parent = aimbotKnob
+
+local aimbotLabel = Instance.new("TextLabel")
+aimbotLabel.Size = UDim2.new(0, 140, 0, 28)
+aimbotLabel.Position = UDim2.new(0, 78, 0, 112)
+aimbotLabel.BackgroundTransparency = 1
+aimbotLabel.Text = "Aimbot ON (F2)"
+aimbotLabel.TextColor3 = Color3.fromHex("00FF00")
+aimbotLabel.TextSize = 11
+aimbotLabel.Font = Enum.Font.Gotham
+aimbotLabel.TextXAlignment = Enum.TextXAlignment.Left
+aimbotLabel.Parent = frame
 
 -- Footer
 local footer = Instance.new("TextLabel")
@@ -139,82 +184,160 @@ footer.Font = Enum.Font.Gotham
 footer.Parent = frame
 
 -- ==========================================
--- TOGGLE FUNCTION
+-- TOGGLES
 -- ==========================================
+
 local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
-local function toggle()
+local function toggleGun()
     scriptActive = not scriptActive
+
     if scriptActive then
         TweenService:Create(knob, tweenInfo, {
             Position = UDim2.new(0, 29, 0.5, -11)
         }):Play()
+
         TweenService:Create(switchBg, tweenInfo, {
             BackgroundColor3 = Color3.fromHex("00FF00")
         }):Play()
+
+        switchLabel.Text = "Auto Gun ON (F1)"
+        switchLabel.TextColor3 = Color3.fromHex("00FF00")
+
         statusValue.Text = "ON"
         statusValue.TextColor3 = Color3.fromHex("00FF00")
-        switchLabel.Text = "Active"
-        switchLabel.TextColor3 = Color3.fromHex("00FF00")
-        remainingTime = interval
     else
         TweenService:Create(knob, tweenInfo, {
             Position = UDim2.new(0, 3, 0.5, -11)
         }):Play()
+
         TweenService:Create(switchBg, tweenInfo, {
             BackgroundColor3 = Color3.fromHex("FF4444")
         }):Play()
+
+        switchLabel.Text = "Auto Gun OFF (F1)"
+        switchLabel.TextColor3 = Color3.fromHex("FF4444")
+
         statusValue.Text = "OFF"
         statusValue.TextColor3 = Color3.fromHex("FF4444")
-        switchLabel.Text = "Press F1 to activate"
-        switchLabel.TextColor3 = Color3.fromHex("666666")
+    end
+end
+
+local function toggleAimbot()
+    aimbotEnabled = not aimbotEnabled
+
+    if aimbotEnabled then
+        TweenService:Create(aimbotKnob, tweenInfo, {
+            Position = UDim2.new(0, 29, 0.5, -11)
+        }):Play()
+
+        TweenService:Create(aimbotBg, tweenInfo, {
+            BackgroundColor3 = Color3.fromHex("00FF00")
+        }):Play()
+
+        aimbotLabel.Text = "Aimbot ON (F2)"
+        aimbotLabel.TextColor3 = Color3.fromHex("00FF00")
+    else
+        TweenService:Create(aimbotKnob, tweenInfo, {
+            Position = UDim2.new(0, 3, 0.5, -11)
+        }):Play()
+
+        TweenService:Create(aimbotBg, tweenInfo, {
+            BackgroundColor3 = Color3.fromHex("FF4444")
+        }):Play()
+
+        aimbotLabel.Text = "Aimbot OFF (F2)"
+        aimbotLabel.TextColor3 = Color3.fromHex("FF4444")
     end
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if input.KeyCode == Enum.KeyCode.F1 and not gameProcessed then
-        toggle()
+    if gameProcessed then return end
+
+    if input.KeyCode == Enum.KeyCode.F1 then
+        toggleGun()
+    end
+
+    if input.KeyCode == Enum.KeyCode.F2 then
+        toggleAimbot()
     end
 end)
 
 -- ==========================================
--- AUTO ACTION
+-- SLIME AIMBOT
 -- ==========================================
-local function fireGun()
-    local vim = game:GetService("VirtualInputManager")
 
-    -- LEFT CLICK
-    vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-    vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+local function getClosestSlime()
+    local closest = nil
+    local shortest = math.huge
 
-    -- RIGHT CLICK
-    vim:SendMouseButtonEvent(0, 0, 1, true, game, 0)
-    vim:SendMouseButtonEvent(0, 0, 1, false, game, 0)
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and v.Name == "ObeliskSlime" then
+
+            local obelisk = v:FindFirstChild("Obelisk")
+
+            if obelisk then
+                local part = obelisk:FindFirstChild("Part")
+
+                if part then
+                    local pos, visible = Camera:WorldToViewportPoint(part.Position)
+
+                    if visible then
+                        local mousePos = UserInputService:GetMouseLocation()
+
+                        local distance =
+                            (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
+
+                        if distance < shortest then
+                            shortest = distance
+                            closest = part
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return closest
 end
 
--- Auto activate on launch
-TweenService:Create(knob, tweenInfo, {
-    Position = UDim2.new(0, 29, 0.5, -11)
-}):Play()
-TweenService:Create(switchBg, tweenInfo, {
-    BackgroundColor3 = Color3.fromHex("00FF00")
-}):Play()
-statusValue.Text = "ON"
-statusValue.TextColor3 = Color3.fromHex("00FF00")
-switchLabel.Text = "Active"
-switchLabel.TextColor3 = Color3.fromHex("00FF00")
+-- ==========================================
+-- AUTO FIRE
+-- ==========================================
+
+local function fireGun()
+    -- LEFT CLICK
+    VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
+    VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
+
+    -- RIGHT CLICK
+    VirtualInputManager:SendMouseButtonEvent(0,0,1,true,game,0)
+    VirtualInputManager:SendMouseButtonEvent(0,0,1,false,game,0)
+end
 
 -- ==========================================
 -- MAIN LOOP
 -- ==========================================
+
 RunService.Heartbeat:Connect(function(dt)
-    if not scriptActive then return end
 
-    remainingTime = remainingTime - dt
+    if scriptActive then
+        remainingTime = remainingTime - dt
 
-    if remainingTime <= 0 then
-        remainingTime = interval
-        fireGun()
+        if remainingTime <= 0 then
+            remainingTime = interval
+            fireGun()
+        end
+    end
+
+    if aimbotEnabled then
+        local target = getClosestSlime()
+
+        if target then
+            Camera.CFrame = Camera.CFrame:Lerp(
+                CFrame.new(Camera.CFrame.Position, target.Position),
+                0.15
+            )
+        end
     end
 end)
-
