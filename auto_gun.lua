@@ -13,7 +13,6 @@ repeat task.wait() until game:IsLoaded()
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local player = Players.LocalPlayer
@@ -21,6 +20,7 @@ local playerGui = player:WaitForChild("PlayerGui")
 
 local scriptActive = true
 local holdingMouse = false
+local minimized = false
 
 -- ==========================================
 -- REMOVE OLD GUI
@@ -40,8 +40,8 @@ gui.ResetOnSpawn = false
 gui.Parent = playerGui
 
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 280, 0, 360)
-main.Position = UDim2.new(0, 20, 0.5, -180)
+main.Size = UDim2.new(0, 280, 0, 110)
+main.Position = UDim2.new(0, 20, 0.5, -55)
 main.BackgroundColor3 = Color3.fromRGB(12,12,18)
 main.BorderSizePixel = 0
 main.Active = true
@@ -57,13 +57,34 @@ corner.Parent = main
 -- ==========================================
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1,0,0,45)
+title.Size = UDim2.new(1,-40,0,45)
+title.Position = UDim2.new(0,10,0,0)
 title.BackgroundTransparency = 1
 title.Text = "Nothing0 Hub"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
+title.TextXAlignment = Enum.TextXAlignment.Left
 title.TextColor3 = Color3.new(1,1,1)
 title.Parent = main
+
+-- ==========================================
+-- MINIMIZE BUTTON
+-- ==========================================
+
+local minimize = Instance.new("TextButton")
+minimize.Size = UDim2.new(0,30,0,30)
+minimize.Position = UDim2.new(1,-35,0,8)
+minimize.BackgroundColor3 = Color3.fromRGB(25,25,35)
+minimize.BorderSizePixel = 0
+minimize.Text = "-"
+minimize.Font = Enum.Font.GothamBold
+minimize.TextSize = 18
+minimize.TextColor3 = Color3.new(1,1,1)
+minimize.Parent = main
+
+local minimizeCorner = Instance.new("UICorner")
+minimizeCorner.CornerRadius = UDim.new(0,8)
+minimizeCorner.Parent = minimize
 
 -- ==========================================
 -- SCROLL
@@ -72,7 +93,7 @@ title.Parent = main
 local scroll = Instance.new("ScrollingFrame")
 scroll.Size = UDim2.new(1,-10,1,-55)
 scroll.Position = UDim2.new(0,5,0,50)
-scroll.CanvasSize = UDim2.new(0,0,0,500)
+scroll.CanvasSize = UDim2.new(0,0,0,100)
 scroll.BackgroundTransparency = 1
 scroll.BorderSizePixel = 0
 scroll.ScrollBarThickness = 3
@@ -81,6 +102,31 @@ scroll.Parent = main
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0,10)
 layout.Parent = scroll
+
+-- ==========================================
+-- MINIMIZE FUNCTION
+-- ==========================================
+
+minimize.MouseButton1Click:Connect(function()
+
+    minimized = not minimized
+
+    if minimized then
+
+        scroll.Visible = false
+        main.Size = UDim2.new(0,280,0,45)
+
+        minimize.Text = "+"
+
+    else
+
+        scroll.Visible = true
+        main.Size = UDim2.new(0,280,0,110)
+
+        minimize.Text = "-"
+
+    end
+end)
 
 -- ==========================================
 -- AUTO GUN TOGGLE
@@ -178,68 +224,6 @@ UserInputService.InputBegan:Connect(function(input,gp)
 end)
 
 updateToggle()
-
--- ==========================================
--- RED OPTIONS
--- ==========================================
-
-local function createDisabledOption(text)
-
-    local holder = Instance.new("Frame")
-    holder.Size = UDim2.new(1,-10,0,42)
-    holder.BackgroundTransparency = 1
-    holder.Parent = scroll
-
-    local line = Instance.new("Frame")
-    line.Size = UDim2.new(0,2,0,28)
-    line.Position = UDim2.new(0,0,0.5,-14)
-    line.BackgroundColor3 = Color3.fromRGB(255,70,70)
-    line.BorderSizePixel = 0
-    line.Parent = holder
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0,190,1,0)
-    label.Position = UDim2.new(0,10,0,0)
-    label.BackgroundTransparency = 1
-    label.Font = Enum.Font.Gotham
-    label.TextSize = 14
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Text = text
-    label.TextColor3 = Color3.fromRGB(255,80,80)
-    label.Parent = holder
-
-    local toggleBg = Instance.new("Frame")
-    toggleBg.Size = UDim2.new(0,42,0,22)
-    toggleBg.Position = UDim2.new(1,-50,0.5,-11)
-    toggleBg.BackgroundColor3 = Color3.fromRGB(45,45,55)
-    toggleBg.BorderSizePixel = 0
-    toggleBg.Parent = holder
-
-    local toggleCorner = Instance.new("UICorner")
-    toggleCorner.CornerRadius = UDim.new(1,0)
-    toggleCorner.Parent = toggleBg
-
-    local knob = Instance.new("Frame")
-    knob.Size = UDim2.new(0,18,0,18)
-    knob.Position = UDim2.new(0,2,0.5,-9)
-    knob.BackgroundColor3 = Color3.new(1,1,1)
-    knob.BorderSizePixel = 0
-    knob.Parent = toggleBg
-
-    local knobCorner = Instance.new("UICorner")
-    knobCorner.CornerRadius = UDim.new(1,0)
-    knobCorner.Parent = knob
-end
-
-createDisabledOption("Auto Roll")
-createDisabledOption("Auto Equip Best")
-createDisabledOption("Auto Loot")
-createDisabledOption("Auto Collect Fruits")
-createDisabledOption("Auto Kill")
-createDisabledOption("Auto Index")
-createDisabledOption("Auto TP Zone")
-createDisabledOption("Auto Rebirth")
-createDisabledOption("Auto Boss")
 
 -- ==========================================
 -- HOLD FUNCTIONS
@@ -359,8 +343,6 @@ task.spawn(function()
             game
         )
 
-        print("F1 #1")
-
         task.wait(10)
 
         -- F1 AGAIN
@@ -377,8 +359,6 @@ task.spawn(function()
             false,
             game
         )
-
-        print("F1 #2")
 
     end
 
